@@ -1,0 +1,39 @@
+name: Test image
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build test image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: caddy-custom:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Show Caddy version
+        run: docker run --rm caddy-custom:test caddy version
+
+      - name: Verify plugins
+        run: |
+          docker run --rm caddy-custom:test caddy list-modules \
+            | grep '^dns.providers.cloudflare$'
+
+          docker run --rm caddy-custom:test caddy list-modules \
+            | grep '^http.handlers.oidc$'
