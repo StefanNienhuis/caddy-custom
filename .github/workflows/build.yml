@@ -31,4 +31,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/StefanNienhuis/caddy-custom:latest
+          tags: ghcr.io/stefannienhuis/caddy-custom:latest
